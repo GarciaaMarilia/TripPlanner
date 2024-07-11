@@ -1,16 +1,11 @@
 import z from "zod";
-import dayjs from "dayjs";
-import "dayjs/locale/pt-br";
 import nodemailer from "nodemailer";
 import { FastifyInstance } from "fastify";
-import localizedFormat from "dayjs/plugin/localizedFormat";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
+import { dayjs} from "../lib/dayjs";
 import { prisma } from "../lib/prisma";
 import { getMailClient } from "../lib/mail";
-
-dayjs.locale('pt-br');
-dayjs.extend(localizedFormat);
 
 export async function createTrip(app: FastifyInstance) {
  app.withTypeProvider<ZodTypeProvider>().post(
@@ -38,14 +33,14 @@ export async function createTrip(app: FastifyInstance) {
    } = request.body; // a requisiçao post envia esses dados para a api
 
    if (dayjs(starts_at).isBefore(new Date())) {
-    throw new Error("Invalid trip start date.");
+    throw new Error("Invalid trip start date."); // validaçao das datas
    }
 
    if (dayjs(ends_at).isBefore(starts_at)) {
     throw new Error("Invalid trip end date.");
    }
 
-   const trip = await prisma.trip.create({
+   const trip = await prisma.trip.create({ // criando uma trip no backend
     data: {
      destination,
      starts_at,
@@ -75,7 +70,7 @@ export async function createTrip(app: FastifyInstance) {
 
    const mail = await getMailClient();
 
-   const message = await mail.sendMail({
+   const message = await mail.sendMail({ // esse email é enviado para o criador da trip imediatamente apos a trip ser registrada no backend
     from: {
      name: "Marilia",
      address: "garciaamarilia@gmail.com",
