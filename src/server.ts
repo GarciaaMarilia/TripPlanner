@@ -7,6 +7,7 @@ import {
 } from "fastify-type-provider-zod";
 
 import { getLinks } from "./routes/get-links";
+import { errorHandler } from "./error-handler";
 import { createTrip } from "./routes/create-trip";
 import { createLink } from "./routes/create-link";
 import { updateTrip } from "./routes/update-trip";
@@ -17,6 +18,7 @@ import { getParticipant } from "./routes/get-participant";
 import { getTripDetails } from "./routes/get-trip-details";
 import { getParticipants } from "./routes/get-participants";
 import { confirmParticipants } from "./routes/confirm-participant";
+import { env } from "./env";
 
 const app = fastify();
 
@@ -25,8 +27,10 @@ app.register(cors, {
  origin: "*",
 });
 
-app.setValidatorCompiler(validatorCompiler);
+app.setValidatorCompiler(validatorCompiler); // tratamento de dados com zod
 app.setSerializerCompiler(serializerCompiler);
+
+app.setErrorHandler(errorHandler); // tratamento de erros
 
 app.register(getLinks);
 app.register(createTrip);
@@ -40,6 +44,6 @@ app.register(getParticipant);
 app.register(getParticipants);
 app.register(confirmParticipants);
 
-app.listen({ port: 3333 }).then(() => {
+app.listen({ port: env.PORT }).then(() => {
  console.log("Server running");
 });

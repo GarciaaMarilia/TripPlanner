@@ -4,6 +4,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { dayjs } from "../lib/dayjs";
 import { prisma } from "../lib/prisma";
+import { ClientError } from "../errors/client-error";
 
 export async function getActivity(app: FastifyInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
@@ -30,7 +31,7 @@ export async function getActivity(app: FastifyInstance) {
    });
 
    if (!trip) {
-    throw new Error("Invalid activity date.");
+    throw new ClientError("Invalid activity date.");
    }
 
    const differenceInDaysBetweentripStartAndEnd = dayjs(trip.ends_at).diff(
