@@ -11,7 +11,7 @@ model Trip {
   id           String        @id @default(uuid())
   destination  String
   starts_at    DateTime
-  ends_at      DateTime
+  ends_at      DateTime?
   is_confirmed Boolean       @default(false)
   created_at   DateTime      @default(now())
   participants Participant[]

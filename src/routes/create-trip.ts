@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-import { dayjs} from "../lib/dayjs";
+import { dayjs } from "../lib/dayjs";
 import { prisma } from "../lib/prisma";
 import { getMailClient } from "../lib/mail";
 import { ClientError } from "../errors/client-error";
@@ -16,7 +16,7 @@ export async function createTrip(app: FastifyInstance) {
     body: z.object({
      destination: z.string().min(4),
      starts_at: z.coerce.date(),
-     ends_at: z.coerce.date(),
+     ends_at: z.coerce.date().optional(),
      owner_name: z.string(),
      owner_email: z.string().email(),
      emails_to_invite: z.array(z.string().email()),
@@ -37,41 +37,50 @@ export async function createTrip(app: FastifyInstance) {
     throw new ClientError("Invalid trip start date."); // validaçao das datas
    }
 
-   if (dayjs(ends_at).isBefore(starts_at)) {
+   if (ends_at && dayjs(ends_at).isBefore(starts_at)) {
     throw new ClientError("Invalid trip end date.");
    }
 
-   const trip = await prisma.trip.create({ // criando uma trip no backend
-    data: {
-     destination,
-     starts_at,
-     ends_at,
-     participants: {
-      createMany: {
-       data: [
-        {
-         name: owner_name,
-         email: owner_email,
-         is_owner: true,
-         is_confirmed: true,
-        },
-        ...emails_to_invite.map((email) => {
-         return { email };
-        }),
-       ],
-      },
+   const tripData: any = {
+    destination,
+    starts_at,
+    participants: {
+     createMany: {
+      data: [
+       {
+        name: owner_name,
+        email: owner_email,
+        is_owner: true,
+        is_confirmed: true,
+       },
+       ...emails_to_invite.map((email) => {
+        return { email };
+       }),
+      ],
      },
     },
+   };
+
+   if (ends_at) {
+    tripData.ends_at = ends_at;
+   } else {
+    tripData.ends_at = starts_at;
+   }
+
+   const trip = await prisma.trip.create({
+    // criando uma trip no backend
+    data: tripData,
    });
 
    const formattedStartDate = dayjs(starts_at).format("LL");
-   const formattedEndDate = dayjs(ends_at).format("LL");
+   const formattedEndDate = ends_at && dayjs(ends_at).format("LL");
 
    const confirmationLink = `http://localhost:3333/trips/${trip.id}/confirm`;
 
    const mail = await getMailClient();
 
-   const message = await mail.sendMail({ // esse email é enviado para o criador da trip imediatamente apos a trip ser registrada no backend
+   const message = await mail.sendMail({
+    // esse email é enviado para o criador da trip imediatamente apos a trip ser registrada no backend
     from: {
      name: "Marilia",
      address: "garciaamarilia@gmail.com",
