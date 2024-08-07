@@ -8,17 +8,21 @@ import { prisma } from "../lib/prisma";
 import { getMailClient } from "../lib/mail";
 import { ClientError } from "../errors/client-error";
 
+const createInviteParamsSchema = z.object({
+ tripId: z.string().uuid(),
+});
+
+const createInviteBodySchema = z.object({
+ email: z.string().email(),
+});
+
 export async function createInvite(app: FastifyInstance) {
  app.withTypeProvider<ZodTypeProvider>().post(
   "/trips/:tripId/invites",
   {
    schema: {
-    params: z.object({
-     tripId: z.string().uuid(),
-    }),
-    body: z.object({
-     email: z.string().email(),
-    }),
+    params: createInviteParamsSchema,
+    body: createInviteBodySchema,
    },
   },
   async (request) => {

@@ -8,19 +8,21 @@ import { prisma } from "../lib/prisma";
 import { getMailClient } from "../lib/mail";
 import { ClientError } from "../errors/client-error";
 
+const createTripSchema = z.object({
+ destination: z.string().min(4),
+ starts_at: z.coerce.date(),
+ ends_at: z.coerce.date().optional(),
+ owner_name: z.string(),
+ owner_email: z.string().email(),
+ emails_to_invite: z.array(z.string().email()),
+});
+
 export async function createTrip(app: FastifyInstance) {
  app.withTypeProvider<ZodTypeProvider>().post(
   "/trips",
   {
    schema: {
-    body: z.object({
-     destination: z.string().min(4),
-     starts_at: z.coerce.date(),
-     ends_at: z.coerce.date().optional(),
-     owner_name: z.string(),
-     owner_email: z.string().email(),
-     emails_to_invite: z.array(z.string().email()),
-    }),
+    body: createTripSchema,
    },
   },
   async (request) => {

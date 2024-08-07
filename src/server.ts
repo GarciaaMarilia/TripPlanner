@@ -20,6 +20,8 @@ import { getParticipants } from "./routes/get-participants";
 import { confirmParticipants } from "./routes/confirm-participant";
 import { env } from "./env";
 import { authRoutes } from "./routes/auth";
+import { getTrips } from "./routes/get-trips";
+
 
 const app = fastify();
 
@@ -34,9 +36,11 @@ app.setSerializerCompiler(serializerCompiler);
 app.setErrorHandler(errorHandler); // tratamento de erros
 
 app.register(getLinks);
+app.register(getTrips);
 app.register(createTrip);
 app.register(createLink);
 app.register(updateTrip);
+app.register(authRoutes);
 app.register(confirmTrip);
 app.register(getActivity);
 app.register(createActivity);
@@ -44,7 +48,6 @@ app.register(getTripDetails);
 app.register(getParticipant);
 app.register(getParticipants);
 app.register(confirmParticipants);
-app.register(authRoutes);
 
 app.listen({ port: env.PORT }).then(() => {
  console.log("Server running");

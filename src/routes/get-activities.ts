@@ -6,14 +6,16 @@ import { dayjs } from "../lib/dayjs";
 import { prisma } from "../lib/prisma";
 import { ClientError } from "../errors/client-error";
 
+const getActivitiesSchema = z.object({
+ tripId: z.string().uuid(),
+});
+
 export async function getActivity(app: FastifyInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
   "/trips/:tripId/activities",
   {
    schema: {
-    params: z.object({
-     tripId: z.string().uuid(),
-    }),
+    params: getActivitiesSchema,
    },
   },
   async (request) => {
