@@ -8,14 +8,16 @@ import { prisma } from "../lib/prisma";
 import { getMailClient } from "../lib/mail";
 import { ClientError } from "../errors/client-error";
 
+const confirmTripSchema = z.object({
+ tripId: z.string().uuid(),
+});
+
 export async function confirmTrip(app: FastifyInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
   "/trips/:tripId/confirm",
   {
    schema: {
-    params: z.object({
-     tripId: z.string().uuid(),
-    }),
+    params: confirmTripSchema,
    },
   },
   async (request, reply) => {

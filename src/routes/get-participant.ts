@@ -5,14 +5,16 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { prisma } from "../lib/prisma";
 import { ClientError } from "../errors/client-error";
 
+const getParticipantSchema = z.object({
+ participantId: z.string().uuid(),
+});
+
 export async function getParticipant(app: FastifyInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
   "/participants/:participantId",
   {
    schema: {
-    params: z.object({
-     participantId: z.string().uuid(),
-    }),
+    params: getParticipantSchema,
    },
   },
   async (request) => {
