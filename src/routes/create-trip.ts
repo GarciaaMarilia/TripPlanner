@@ -9,6 +9,7 @@ import { getMailClient } from "../lib/mail";
 import { ClientError } from "../errors/client-error";
 
 const createTripSchema = z.object({
+ id_user: z.string(),
  destination: z.string().min(4),
  starts_at: z.coerce.date(),
  ends_at: z.coerce.date().optional(),
@@ -27,16 +28,17 @@ export async function createTrip(app: FastifyInstance) {
   },
   async (request) => {
    const {
+    id_user,
     destination,
     starts_at,
     ends_at,
     owner_name,
     owner_email,
     emails_to_invite,
-   } = request.body; // a requisiçao post envia esses dados para a api
+   } = request.body;
 
    if (dayjs(starts_at).isBefore(new Date())) {
-    throw new ClientError("Invalid trip start date."); // validaçao das datas
+    throw new ClientError("Invalid trip start date.");
    }
 
    if (ends_at && dayjs(ends_at).isBefore(starts_at)) {
@@ -44,6 +46,7 @@ export async function createTrip(app: FastifyInstance) {
    }
 
    const tripData: any = {
+    id_user,
     destination,
     starts_at,
     participants: {
@@ -69,49 +72,53 @@ export async function createTrip(app: FastifyInstance) {
     tripData.ends_at = starts_at;
    }
 
-   const trip = await prisma.trip.create({
-    // criando uma trip no backend
-    data: tripData,
-   });
+   try {
+    const trip = await prisma.trip.create({
+     data: tripData,
+    });
+    console.log("Trip Created:", trip);
 
-   const formattedStartDate = dayjs(starts_at).format("LL");
-   const formattedEndDate = ends_at && dayjs(ends_at).format("LL");
+    const formattedStartDate = dayjs(starts_at).format("LL");
+    const formattedEndDate = ends_at && dayjs(ends_at).format("LL");
 
-   const confirmationLink = `http://localhost:3333/trips/${trip.id}/confirm`;
+    const confirmationLink = `http://localhost:3333/trips/${trip.id}/confirm`;
 
-   const mail = await getMailClient();
+    const mail = await getMailClient();
 
-   const message = await mail.sendMail({
-    // esse email é enviado para o criador da trip imediatamente apos a trip ser registrada no backend
-    from: {
-     name: "Marilia",
-     address: "garciaamarilia@gmail.com",
-    },
-    to: {
-     name: owner_name,
-     address: owner_email,
-    },
-    subject: `Confirme sua viagem para ${destination}`,
-    html: `
-    <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
-          <p>Você solicitou a criação de uma viagem para <strong>${destination}</strong> nas datas de <strong>${formattedStartDate}</strong> até <strong>${formattedEndDate}</strong>.</p>
-          <p></p>
-          <p>Para confirmar sua viagem, clique no link abaixo:</p>
-          <p></p>
-          <p>
-            <a href="${confirmationLink}">Confirmar viagem</a>
-          </p>
-          <p></p>
-          <p>Caso você não saiba do que se trata esse e-mail, apenas ignore esse e-mail.</p>
-        </div>
-    `.trim(),
-   });
+    const message = await mail.sendMail({
+     from: {
+      name: "Marilia",
+      address: "garciaamarilia@gmail.com",
+     },
+     to: {
+      name: owner_name,
+      address: owner_email,
+     },
+     subject: `Confirme sua viagem para ${destination}`,
+     html: `
+       <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
+             <p>Você solicitou a criação de uma viagem para <strong>${destination}</strong> nas datas de <strong>${formattedStartDate}</strong> até <strong>${formattedEndDate}</strong>.</p>
+             <p></p>
+             <p>Para confirmar sua viagem, clique no link abaixo:</p>
+             <p></p>
+             <p>
+               <a href="${confirmationLink}">Confirmar viagem</a>
+             </p>
+             <p></p>
+             <p>Caso você não saiba do que se trata esse e-mail, apenas ignore esse e-mail.</p>
+           </div>
+       `.trim(),
+    });
 
-   console.log(nodemailer.getTestMessageUrl(message));
+    console.log(nodemailer.getTestMessageUrl(message));
 
-   return {
-    tripId: trip.id,
-   };
+    return {
+     tripId: trip.id,
+    };
+   } catch (error) {
+    console.error("Error creating trip:", error);
+    throw new ClientError("Failed to create trip.");
+   }
   }
  );
 }
