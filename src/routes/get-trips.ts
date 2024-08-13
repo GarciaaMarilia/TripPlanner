@@ -6,7 +6,7 @@ import { prisma } from "../lib/prisma";
 import { ClientError } from "../errors/client-error";
 
 const getTripsSchema = z.object({
- userId: z.string().uuid(),
+ userId: z.string(),
 });
 
 export async function getTrips(app: FastifyInstance) {
@@ -19,17 +19,10 @@ export async function getTrips(app: FastifyInstance) {
   },
   async (request) => {
    const { userId } = request.params;
-
+console.log("here", typeof userId, userId)
    const trips = await prisma.trip.findMany({
     where: {
-     participants: {
-      some: {
-       id: userId,
-      },
-     },
-    },
-    include: {
-     participants: true,
+     id_user: userId,
     },
    });
 
@@ -38,7 +31,7 @@ export async function getTrips(app: FastifyInstance) {
    }
 
    return {
-    trips,
+    trips: trips,
    };
   }
  );

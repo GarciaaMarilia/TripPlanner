@@ -9,6 +9,7 @@ datasource db {
 
 model Trip {
   id           String        @id @default(uuid())
+  id_user      String
   destination  String
   starts_at    DateTime
   ends_at      DateTime?
@@ -18,7 +19,9 @@ model Trip {
   activities   Activity[]
   links        Link[]
 
-  @@map("trips") // so nome no banco de dados
+  user User @relation(fields: [id_user], references: [id])
+
+  @@map("trips")
 }
 
 model Participant {
@@ -57,10 +60,11 @@ model Link {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
+  id       String  @id @default(uuid())
   email    String  @unique
   password String
   name     String?
+  trips    Trip[]
 
   @@map("users")
 }
