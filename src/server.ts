@@ -6,6 +6,9 @@ import {
  validatorCompiler,
 } from "fastify-type-provider-zod";
 
+import { env } from "./env";
+import { authRoutes } from "./routes/auth";
+import { getTrips } from "./routes/get-trips";
 import { getLinks } from "./routes/get-links";
 import { errorHandler } from "./error-handler";
 import { createTrip } from "./routes/create-trip";
@@ -15,12 +18,10 @@ import { confirmTrip } from "./routes/confirm-trip";
 import { getActivity } from "./routes/get-activities";
 import { createActivity } from "./routes/create-activity";
 import { getParticipant } from "./routes/get-participant";
+import { deleteActivity } from "./routes/delete-activity";
 import { getTripDetails } from "./routes/get-trip-details";
 import { getParticipants } from "./routes/get-participants";
 import { confirmParticipants } from "./routes/confirm-participant";
-import { env } from "./env";
-import { authRoutes } from "./routes/auth";
-import { getTrips } from "./routes/get-trips";
 
 
 const app = fastify();
@@ -46,6 +47,7 @@ app.register(getActivity);
 app.register(createActivity);
 app.register(getTripDetails);
 app.register(getParticipant);
+app.register(deleteActivity);
 app.register(getParticipants);
 app.register(confirmParticipants);
 
