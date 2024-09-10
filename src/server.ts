@@ -6,7 +6,6 @@ import {
  validatorCompiler,
 } from "fastify-type-provider-zod";
 
-import { env } from "./env";
 import { authRoutes } from "./routes/auth";
 import { getTrips } from "./routes/get-trips";
 import { getLinks } from "./routes/get-links";
@@ -22,13 +21,14 @@ import { deleteActivity } from "./routes/delete-activity";
 import { getTripDetails } from "./routes/get-trip-details";
 import { getParticipants } from "./routes/get-participants";
 import { confirmParticipants } from "./routes/confirm-participant";
+import { env } from "./env";
 
 
 const app = fastify();
 
 app.register(cors, {
  // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
- origin: "*",
+ origin: "https://garciaamarilia.github.io/TripPlanner-Web/",
 });
 
 app.setValidatorCompiler(validatorCompiler); // tratamento de dados com zod
@@ -54,3 +54,4 @@ app.register(confirmParticipants);
 app.listen({ port: env.PORT }).then(() => {
  console.log("Server running");
 });
+
