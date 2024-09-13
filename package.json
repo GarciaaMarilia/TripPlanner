@@ -1,32 +1,33 @@
 {
-  "name": "tripplanner",
-  "version": "1.0.0",
-  "description": "TripPlanner backend",
-  "main": "index.js",
-  "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^20.14.10",
-    "@types/nodemailer": "^6.4.15",
-    "prisma": "^5.16.2",
-    "typescript": "^5.5.3"
-  },
-  "dependencies": {
-    "@fastify/cors": "^9.0.1",
-    "@prisma/client": "^5.16.2",
-    "bcryptjs": "^2.4.3",
-    "dayjs": "^1.11.11",
-    "fastify": "^4.28.1",
-    "fastify-type-provider-zod": "^2.0.0",
-    "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^6.9.14",
-    "tsx": "^4.16.2",
-    "zod": "^3.23.8"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ "name": "tripplanner",
+ "version": "1.0.0",
+ "description": "TripPlanner backend",
+ "main": "index.js",
+ "scripts": {
+  "dev": "tsx watch src/server.ts",
+  "build": "tsc",
+  "start": "node dist/server.js"
+ },
+ "keywords": [],
+ "author": "",
+ "license": "ISC",
+ "devDependencies": {
+  "@types/node": "^20.14.10",
+  "@types/nodemailer": "^6.4.15",
+  "prisma": "^5.16.2",
+  "typescript": "^5.5.3"
+ },
+ "dependencies": {
+  "@fastify/cors": "^9.0.1",
+  "@prisma/client": "^5.16.2",
+  "bcryptjs": "^2.4.3",
+  "dayjs": "^1.11.11",
+  "fastify": "^4.28.1",
+  "fastify-type-provider-zod": "^2.0.0",
+  "jsonwebtoken": "^9.0.2",
+  "nodemailer": "^6.9.14",
+  "tsx": "^4.16.2",
+  "zod": "^3.23.8"
+ },
+ "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
