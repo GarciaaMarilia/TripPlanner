@@ -9,6 +9,9 @@
   "heroku-postbuild": "npm run build",
   "start": "node dist/server.js"
  },
+ "engines": {
+  "node": ">=20.14"
+ },
  "keywords": [],
  "author": "",
  "license": "ISC",
