@@ -12,6 +12,13 @@ const confirmTripSchema = z.object({
  tripId: z.string().uuid(),
 });
 
+interface ParticipantProps {
+ id: string;
+ name: string | null;
+ email: string;
+ is_confirmed: boolean;
+}
+
 export async function confirmTrip(app: FastifyInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
   "/trips/:tripId/confirm",
@@ -55,7 +62,7 @@ export async function confirmTrip(app: FastifyInstance) {
    const mail = await getMailClient();
 
    await Promise.all(
-    trip.participants.map(async (participant) => {
+    trip.participants.map(async (participant: ParticipantProps) => {
      const confirmationLink = `http://localhost:3333/participants/${participant.id}/confirm`;
 
      const message = await mail.sendMail({

@@ -10,6 +10,13 @@ const getActivitiesSchema = z.object({
  tripId: z.string().uuid(),
 });
 
+interface ActivityProps {
+ id: string;
+ trip_id: string;
+ title: string | null;
+ occurs_at: Date;
+}
+
 export async function getActivity(app: FastifyInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
   "/trips/:tripId/activities",
@@ -48,7 +55,8 @@ export async function getActivity(app: FastifyInstance) {
 
     return {
      data: date.toDate(),
-     activities: trip.activities.filter((activity) => {
+     activities: trip.activities.filter((activity: ActivityProps) => {
+      // add type para deploy heroku
       return dayjs(activity.occurs_at).isSame(date, "days");
      }),
     };
