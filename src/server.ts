@@ -23,18 +23,21 @@ import { getParticipants } from "./routes/get-participants";
 import { confirmParticipants } from "./routes/confirm-participant";
 import { env } from "./env";
 
-
 const app = fastify();
 
 app.register(cors, {
  // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
- origin: "https://garciaamarilia.github.io/TripPlanner-Web/",
+ origin: "*",
 });
 
 app.setValidatorCompiler(validatorCompiler); // tratamento de dados com zod
 app.setSerializerCompiler(serializerCompiler);
 
 app.setErrorHandler(errorHandler); // tratamento de erros
+
+app.get("/", async (request, reply) => {
+ return { message: "Olá, bem-vindo ao servidor!" };
+});
 
 app.register(getLinks);
 app.register(getTrips);
@@ -54,4 +57,3 @@ app.register(confirmParticipants);
 app.listen({ port: env.PORT }).then((port) => {
  console.log("Server running", port);
 });
-
