@@ -54,6 +54,6 @@ app.register(deleteActivity);
 app.register(getParticipants);
 app.register(confirmParticipants);
 
-app.listen(env.PORT, env.THE_HOST).then((port) => {
- console.log("Server running", port);
+app.listen(env.PORT, env.THE_HOST, () => {
+ console.log("Server running");
 });
