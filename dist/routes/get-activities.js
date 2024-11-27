@@ -39,6 +39,7 @@ async function getActivity(app) {
             return {
                 data: date.toDate(),
                 activities: trip.activities.filter((activity) => {
+                    // add type para deploy heroku
                     return (0, dayjs_1.dayjs)(activity.occurs_at).isSame(date, "days");
                 }),
             };
