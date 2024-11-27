@@ -25,6 +25,8 @@ import { env } from "./env";
 
 const app = fastify();
 
+const PORT = process.env.PORT || env.PORT;
+
 app.register(cors, {
  // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
  origin: "*",
@@ -54,6 +56,6 @@ app.register(deleteActivity);
 app.register(getParticipants);
 app.register(confirmParticipants);
 
-app.listen(env.PORT, env.THE_HOST, () => {
- console.log("Server running");
+app.listen(PORT, "0.0.0.0", () => {
+ console.log(`Server running on port ${PORT}`);
 });
