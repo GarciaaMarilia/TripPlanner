@@ -22,14 +22,18 @@ const get_trip_details_1 = require("./routes/get-trip-details");
 const get_participants_1 = require("./routes/get-participants");
 const confirm_participant_1 = require("./routes/confirm-participant");
 const env_1 = require("./env");
-const app = (0, fastify_1.default)();
+const app = (0, fastify_1.default)({ logger: true });
+const PORT = process.env.PORT || env_1.env.PORT;
 app.register(cors_1.default, {
     // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
-    origin: "https://garciaamarilia.github.io/TripPlanner-Web/",
+    origin: "*",
 });
 app.setValidatorCompiler(fastify_type_provider_zod_1.validatorCompiler); // tratamento de dados com zod
 app.setSerializerCompiler(fastify_type_provider_zod_1.serializerCompiler);
 app.setErrorHandler(error_handler_1.errorHandler); // tratamento de erros
+app.get("/", async (request, reply) => {
+    return { message: "Olá, bem-vindo ao servidor!" };
+});
 app.register(get_links_1.getLinks);
 app.register(get_trips_1.getTrips);
 app.register(create_trip_1.createTrip);
@@ -44,6 +48,6 @@ app.register(get_participant_1.getParticipant);
 app.register(delete_activity_1.deleteActivity);
 app.register(get_participants_1.getParticipants);
 app.register(confirm_participant_1.confirmParticipants);
-app.listen({ port: env_1.env.PORT }).then(() => {
-    console.log("Server running");
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
 });
