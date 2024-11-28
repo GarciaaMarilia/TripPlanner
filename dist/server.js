@@ -24,9 +24,13 @@ const confirm_participant_1 = require("./routes/confirm-participant");
 const env_1 = require("./env");
 const app = (0, fastify_1.default)({ logger: true });
 const PORT = process.env.PORT || env_1.env.PORT;
+const ORIGIN = process.env.WEB_BASE_URL || env_1.env.WEB_BASE_URL;
 app.register(cors_1.default, {
     // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
-    origin: "*",
+    origin: [ORIGIN], // Permite apenas o domínio do GitHub Pages
+    methods: ["GET", "POST", "PUT", "DELETE"], // Especifique os métodos permitidos
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
 });
 app.setValidatorCompiler(fastify_type_provider_zod_1.validatorCompiler); // tratamento de dados com zod
 app.setSerializerCompiler(fastify_type_provider_zod_1.serializerCompiler);
