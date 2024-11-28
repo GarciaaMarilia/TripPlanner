@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const dotenv_1 = __importDefault(require("dotenv"));
 const fastify_1 = __importDefault(require("fastify"));
 const cors_1 = __importDefault(require("@fastify/cors"));
 const fastify_type_provider_zod_1 = require("fastify-type-provider-zod");
@@ -21,13 +22,15 @@ const delete_activity_1 = require("./routes/delete-activity");
 const get_trip_details_1 = require("./routes/get-trip-details");
 const get_participants_1 = require("./routes/get-participants");
 const confirm_participant_1 = require("./routes/confirm-participant");
-const env_1 = require("./env");
 const app = (0, fastify_1.default)({ logger: true });
-const PORT = process.env.PORT || env_1.env.PORT;
-const ORIGIN = process.env.WEB_BASE_URL || env_1.env.WEB_BASE_URL;
+// Carregar o arquivo `.env` correto com base no NODE_ENV
+const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+dotenv_1.default.config({ path: envFile });
+const PORT = process.env.PORT || 3000;
+const origin = process.env.WEB_BASE_URL;
 app.register(cors_1.default, {
     // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
-    origin: [ORIGIN], // Permite apenas o domínio do GitHub Pages
+    origin, // Permite apenas o domínio do GitHub Pages
     methods: ["GET", "POST", "PUT", "DELETE"], // Especifique os métodos permitidos
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
