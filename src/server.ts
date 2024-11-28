@@ -32,6 +32,7 @@ app.register(cors, {
  origin: ["https://garciaamarilia.github.io/TripPlanner-Web/"], // Permite apenas o domínio do GitHub Pages
  methods: ["GET", "POST", "PUT", "DELETE"], // Especifique os métodos permitidos
  credentials: true,
+ allowedHeaders: ["Content-Type"],
 });
 
 app.setValidatorCompiler(validatorCompiler); // tratamento de dados com zod
