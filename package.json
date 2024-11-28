@@ -6,7 +6,8 @@
  "scripts": {
   "dev": "tsx watch src/server.ts",
   "build": "tsc",
-  "start": "prisma generate && node dist/server.js"
+  "start": "prisma generate && node dist/server.js",
+  "deploy": "npm run build"
  },
  "engines": {
   "node": "20.x"
