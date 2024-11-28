@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import fastify from "fastify";
 import cors from "@fastify/cors";
 
@@ -21,16 +22,20 @@ import { deleteActivity } from "./routes/delete-activity";
 import { getTripDetails } from "./routes/get-trip-details";
 import { getParticipants } from "./routes/get-participants";
 import { confirmParticipants } from "./routes/confirm-participant";
-import { env } from "./env";
 
 const app = fastify({ logger: true });
 
-const PORT = process.env.PORT || env.PORT;
-const ORIGIN = process.env.WEB_BASE_URL || env.WEB_BASE_URL;
+// Carregar o arquivo `.env` correto com base no NODE_ENV
+const envFile =
+ process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+dotenv.config({ path: envFile });
+
+const PORT = process.env.PORT || 3000;
+const origin = process.env.WEB_BASE_URL;
 
 app.register(cors, {
  // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
- origin: [ORIGIN], // Permite apenas o domínio do GitHub Pages
+ origin, // Permite apenas o domínio do GitHub Pages
  methods: ["GET", "POST", "PUT", "DELETE"], // Especifique os métodos permitidos
  credentials: true,
  allowedHeaders: ["Content-Type", "Authorization"],
