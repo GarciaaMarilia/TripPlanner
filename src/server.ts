@@ -29,7 +29,7 @@ const PORT = process.env.PORT || env.PORT;
 
 app.register(cors, {
  // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
- origin: ["https://garciaamarilia.github.io"], // Permite apenas o domínio do GitHub Pages
+ origin: ["https://garciaamarilia.github.io/TripPlanner-Web/"], // Permite apenas o domínio do GitHub Pages
  methods: ["GET", "POST", "PUT", "DELETE"], // Especifique os métodos permitidos
  credentials: true,
 });
