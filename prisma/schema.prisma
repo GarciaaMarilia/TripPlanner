@@ -15,11 +15,10 @@ model Trip {
   ends_at      DateTime?
   is_confirmed Boolean       @default(false)
   created_at   DateTime      @default(now())
-  participants Participant[]
   activities   Activity[]
   links        Link[]
-
-  user User @relation(fields: [id_user], references: [id])
+  participants Participant[]
+  user         User          @relation(fields: [id_user], references: [id])
 
   @@map("trips")
 }
@@ -31,8 +30,7 @@ model Participant {
   is_confirmed Boolean @default(false)
   is_owner     Boolean @default(false)
   trip_id      String
-
-  trip Trip @relation(fields: [trip_id], references: [id])
+  trip         Trip    @relation(fields: [trip_id], references: [id])
 
   @@map("participants")
 }
@@ -42,8 +40,7 @@ model Activity {
   title     String
   occurs_at DateTime
   trip_id   String
-
-  trip Trip @relation(fields: [trip_id], references: [id])
+  trip      Trip     @relation(fields: [trip_id], references: [id])
 
   @@map("activities")
 }
@@ -53,8 +50,7 @@ model Link {
   title   String
   url     String
   trip_id String
-
-  trip Trip @relation(fields: [trip_id], references: [id])
+  trip    Trip   @relation(fields: [trip_id], references: [id])
 
   @@map("links")
 }
