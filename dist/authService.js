@@ -26,7 +26,7 @@ async function Login(email, password) {
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-        throw new Error("invalid password");
+        throw new Error("Invalid password");
     }
     const token = jwt.sign({ userId: user.id }, "your_jwt-secret", {
         expiresIn: "1h",
