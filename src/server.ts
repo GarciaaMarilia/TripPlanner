@@ -30,8 +30,8 @@ const envFile =
  process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
 dotenv.config({ path: envFile });
 
-const PORT = process.env.PORT || 3000;
-const origin = process.env.WEB_BASE_URL;
+const PORT = process.env.PORT || 3333;
+const origin = process.env.API_BASE_URL;
 
 app.register(cors, {
  // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
