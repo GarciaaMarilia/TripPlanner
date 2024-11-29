@@ -31,11 +31,10 @@ const envFile =
 dotenv.config({ path: envFile });
 
 const PORT = process.env.PORT || 3333;
-const origin = process.env.WEB_BASE_URL;
 
 app.register(cors, {
  // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
- origin, // Permite apenas o domínio do GitHub Pages
+ origin: process.env.WEB_BASE_URL, // Permite apenas o domínio do GitHub Pages
  methods: ["GET", "POST", "PUT", "DELETE"], // Especifique os métodos permitidos
  credentials: true,
  allowedHeaders: ["Content-Type", "Authorization"],
