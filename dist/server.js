@@ -28,6 +28,7 @@ const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".en
 dotenv_1.default.config({ path: envFile });
 const PORT = process.env.PORT || 3333;
 const origin = process.env.WEB_BASE_URL;
+console.log(PORT, origin);
 app.register(cors_1.default, {
     // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
     origin, // Permite apenas o domínio do GitHub Pages
