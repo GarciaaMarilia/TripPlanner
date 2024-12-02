@@ -15,6 +15,10 @@ const errorHandler = (error, request, reply) => {
             message: error.message,
         });
     }
-    return reply.status(500).send({ mesage: `Internal server error ${error}` });
+    return reply
+        .status(500)
+        .send({
+        mesage: `Internal server error ${error} ${process.env.WEB_BASE_URL}`,
+    });
 };
 exports.errorHandler = errorHandler;
