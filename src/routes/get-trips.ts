@@ -19,7 +19,7 @@ export async function getTrips(app: FastifyInstance) {
   },
   async (request) => {
    const { userId } = request.params;
-console.log("here", typeof userId, userId)
+
    const trips = await prisma.trip.findMany({
     where: {
      id_user: userId,

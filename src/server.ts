@@ -15,6 +15,7 @@ import { createTrip } from "./routes/create-trip";
 import { createLink } from "./routes/create-link";
 import { updateTrip } from "./routes/update-trip";
 import { deleteLink } from "./routes/delete-link";
+import { deleteTrip } from "./routes/delete-trip";
 import { confirmTrip } from "./routes/confirm-trip";
 import { getActivity } from "./routes/get-activities";
 import { createActivity } from "./routes/create-activity";
@@ -22,6 +23,7 @@ import { getParticipant } from "./routes/get-participant";
 import { deleteActivity } from "./routes/delete-activity";
 import { getTripDetails } from "./routes/get-trip-details";
 import { getParticipants } from "./routes/get-participants";
+import { deleteParticipant } from "./routes/delete-participant";
 import { confirmParticipants } from "./routes/confirm-participant";
 
 const app = fastify({ logger: true });
@@ -57,6 +59,7 @@ app.register(createLink);
 app.register(updateTrip);
 app.register(authRoutes);
 app.register(deleteLink);
+app.register(deleteTrip);
 app.register(confirmTrip);
 app.register(getActivity);
 app.register(createActivity);
@@ -64,6 +67,7 @@ app.register(getTripDetails);
 app.register(getParticipant);
 app.register(deleteActivity);
 app.register(getParticipants);
+app.register(deleteParticipant);
 app.register(confirmParticipants);
 
 app.listen(PORT, "0.0.0.0", () => {
