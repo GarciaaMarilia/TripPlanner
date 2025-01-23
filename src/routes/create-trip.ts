@@ -23,6 +23,7 @@ export async function createTrip(app: FastifyTypedInstance) {
   "/trips",
   {
    schema: {
+    description: "Create a trip",
     tags: ["Trips"],
     body: createTripSchema,
    },

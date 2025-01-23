@@ -24,6 +24,7 @@ export async function confirmTrip(app: FastifyTypedInstance) {
   "/trips/:tripId/confirm",
   {
    schema: {
+    description: "Confirm a trip",
     tags: ["Trips"],
     params: confirmTripSchema,
    },

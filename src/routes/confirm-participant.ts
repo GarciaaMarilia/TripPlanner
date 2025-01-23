@@ -14,6 +14,7 @@ export async function confirmParticipants(app: FastifyTypedInstance) {
   "/participants/:participantId/confirm",
   {
    schema: {
+    description: "Confirm a participant",
     tags: ["Participants"],
     params: confirmParticipantSchema,
    },

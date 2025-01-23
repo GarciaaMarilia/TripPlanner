@@ -14,6 +14,7 @@ export async function deleteTrip(app: FastifyTypedInstance) {
   "/trips/:tripId",
   {
    schema: {
+    description: "Delete a trip",
     tags: ["Trips"],
     params: deleteTripSchema,
     response: {

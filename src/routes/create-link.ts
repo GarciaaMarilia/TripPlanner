@@ -19,6 +19,7 @@ export async function createLink(app: FastifyTypedInstance) {
   "/trips/:tripId/links",
   {
    schema: {
+    description: "Create a link",
     tags: ["Trips"],
     params: createLinkParamsSchema,
     body: createLinkBodySchema,

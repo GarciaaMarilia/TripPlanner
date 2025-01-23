@@ -6,19 +6,32 @@ import { prisma } from "../lib/prisma";
 import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
+const createActivityParamsSchema = z.object({
+ tripId: z.string().uuid(),
+});
+
+const createActivityBodySchema = z.object({
+ title: z.string().min(4),
+ occurs_at: z.coerce.date(),
+});
+
+const createActivityResponseSchema = z.object({
+ activityId: z.string().uuid(),
+});
+
 export async function createActivity(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().post(
   "/trips/:tripId/activities",
   {
    schema: {
+    description: "Create an activity",
     tags: ["Activities"],
-    params: z.object({
-     tripId: z.string().uuid(),
-    }),
-    body: z.object({
-     title: z.string().min(4),
-     occurs_at: z.coerce.date(),
-    }),
+    params: createActivityParamsSchema,
+    body: createActivityBodySchema,
+    response: {
+     201: createActivityResponseSchema,
+     204: z.string(),
+    },
    },
   },
   async (request) => {

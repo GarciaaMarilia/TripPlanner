@@ -16,14 +16,22 @@ const updateTripBodySchema = z.object({
  ends_at: z.coerce.date(),
 });
 
+const updateTripResponseSchema = z.object({
+ tripId: z.string(),
+});
+
 export async function updateTrip(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().put(
   "/trips/:tripId",
   {
    schema: {
+    description: "Update a trip",
     tags: ["Trips"],
     params: updateTripParamsSchema,
     body: updateTripBodySchema,
+    response: {
+     200: updateTripResponseSchema,
+    },
    },
   },
   async (request) => {

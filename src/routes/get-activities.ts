@@ -10,6 +10,20 @@ const getActivitiesSchema = z.object({
  tripId: z.string().uuid(),
 });
 
+const activitySchema = z.object({
+ id: z.string().uuid(),
+ trip_id: z.string().uuid(),
+ title: z.string().min(4),
+ occurs_at: z.coerce.date(),
+});
+
+const activitiesResponseSchema = z.array(
+ z.object({
+  data: z.coerce.date(),
+  activities: z.array(activitySchema),
+ })
+);
+
 interface ActivityProps {
  id: string;
  trip_id: string;
@@ -22,8 +36,12 @@ export async function getActivity(app: FastifyTypedInstance) {
   "/trips/:tripId/activities",
   {
    schema: {
+    description: "List all activities for a trip",
     tags: ["Activities"],
     params: getActivitiesSchema,
+    response: {
+     200: activitiesResponseSchema,
+    },
    },
   },
   async (request) => {
@@ -57,15 +75,12 @@ export async function getActivity(app: FastifyTypedInstance) {
     return {
      data: date.toDate(),
      activities: trip.activities.filter((activity: ActivityProps) => {
-      // add type para deploy heroku
       return dayjs(activity.occurs_at).isSame(date, "days");
      }),
     };
    });
 
-   return {
-    activities,
-   };
+   return activities;
   }
  );
 }
