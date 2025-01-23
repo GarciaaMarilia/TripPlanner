@@ -1,8 +1,8 @@
 import z from "zod";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { Login, Register } from "../authService";
+import { FastifyTypedInstance } from "../types";
 
 const registerSchema = z.object({
  email: z.string(),
@@ -11,15 +11,16 @@ const registerSchema = z.object({
 });
 
 const loginSchema = z.object({
- email: z.string(),
+ email: z.string().email(),
  password: z.string(),
 });
 
-export async function authRoutes(app: FastifyInstance) {
+export async function authRoutes(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().post(
   "/register",
   {
    schema: {
+    tags: ["Authenticate"],
     body: registerSchema,
    },
   },
@@ -38,6 +39,8 @@ export async function authRoutes(app: FastifyInstance) {
   "/login",
   {
    schema: {
+    description: "Login user",
+    tags: ["Authenticate"],
     body: loginSchema,
    },
   },

@@ -1,9 +1,9 @@
 import z from "zod";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { dayjs } from "../lib/dayjs";
 import { prisma } from "../lib/prisma";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
 const getActivitiesSchema = z.object({
@@ -17,11 +17,12 @@ interface ActivityProps {
  occurs_at: Date;
 }
 
-export async function getActivity(app: FastifyInstance) {
+export async function getActivity(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
   "/trips/:tripId/activities",
   {
    schema: {
+    tags: ["Activities"],
     params: getActivitiesSchema,
    },
   },

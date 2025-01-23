@@ -1,15 +1,16 @@
 import z from "zod";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { prisma } from "../lib/prisma";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
-export async function deleteActivity(app: FastifyInstance) {
+export async function deleteActivity(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().delete(
   "/trips/:tripId/activities/:activityId",
   {
    schema: {
+    tags: ["Activities"],
     params: z.object({
      tripId: z.string().uuid(),
      activityId: z.string().uuid(),

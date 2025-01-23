@@ -1,19 +1,20 @@
 import z from "zod";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { prisma } from "../lib/prisma";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
 const getLinksSchema = z.object({
  tripId: z.string().uuid(),
 });
 
-export async function getLinks(app: FastifyInstance) {
+export async function getLinks(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
   "/trips/:tripId/links",
   {
    schema: {
+    tags: ["Trips"],
     params: getLinksSchema,
    },
   },

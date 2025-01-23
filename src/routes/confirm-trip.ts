@@ -1,11 +1,11 @@
 import z from "zod";
 import nodemailer from "nodemailer";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { dayjs } from "../lib/dayjs";
 import { prisma } from "../lib/prisma";
 import { getMailClient } from "../lib/mail";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
 const confirmTripSchema = z.object({
@@ -19,11 +19,12 @@ interface ParticipantProps {
  is_confirmed: boolean;
 }
 
-export async function confirmTrip(app: FastifyInstance) {
+export async function confirmTrip(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
   "/trips/:tripId/confirm",
   {
    schema: {
+    tags: ["Trips"],
     params: confirmTripSchema,
    },
   },

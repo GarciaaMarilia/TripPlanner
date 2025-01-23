@@ -1,8 +1,8 @@
 import { z } from "zod";
-import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { prisma } from "../lib/prisma";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
 const createLinkParamsSchema = z.object({
@@ -14,11 +14,12 @@ const createLinkBodySchema = z.object({
  url: z.string().url(),
 });
 
-export async function createLink(app: FastifyInstance) {
+export async function createLink(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().post(
   "/trips/:tripId/links",
   {
    schema: {
+    tags: ["Trips"],
     params: createLinkParamsSchema,
     body: createLinkBodySchema,
    },
