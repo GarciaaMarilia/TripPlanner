@@ -31,40 +31,49 @@ export async function createActivity(app: FastifyTypedInstance) {
     response: {
      201: createActivityResponseSchema,
      204: z.string(),
+     400: z.object({ error: z.string() }),
     },
    },
   },
-  async (request) => {
-   const { tripId } = request.params;
-   const { title, occurs_at } = request.body; // a requisiçao post envia esses dados para a api
+  async (request, reply) => {
+   try {
+    const { tripId } = request.params;
+    const { title, occurs_at } = request.body; // a requisiçao post envia esses dados para a api
 
-   const trip = await prisma.trip.findUnique({
-    where: { id: tripId },
-   });
+    const trip = await prisma.trip.findUnique({
+     where: { id: tripId },
+    });
 
-   if (!trip) {
-    throw new ClientError("Invalid activity date.");
+    if (!trip) {
+     throw new ClientError("Invalid activity date.");
+    }
+
+    if (dayjs(occurs_at).isBefore(trip.starts_at)) {
+     throw new ClientError("Invalid activity start date."); // validaçao das datas
+    }
+
+    if (dayjs(occurs_at).isAfter(trip.ends_at)) {
+     throw new ClientError("Invalid activity end date.");
+    }
+
+    const activity = await prisma.activity.create({
+     data: {
+      title,
+      occurs_at,
+      trip_id: tripId,
+     },
+    });
+
+    return {
+     activityId: activity.id,
+    };
+   } catch (error: unknown) {
+    if (error instanceof ClientError) {
+     reply.code(400).send({
+      error: error.message,
+     });
+    }
    }
-
-   if (dayjs(occurs_at).isBefore(trip.starts_at)) {
-    throw new ClientError("Invalid activity start date."); // validaçao das datas
-   }
-
-   if (dayjs(occurs_at).isAfter(trip.ends_at)) {
-    throw new ClientError("Invalid activity end date.");
-   }
-
-   const activity = await prisma.activity.create({
-    data: {
-     title,
-     occurs_at,
-     trip_id: tripId,
-    },
-   });
-
-   return {
-    activityId: activity.id,
-   };
   }
  );
 }
