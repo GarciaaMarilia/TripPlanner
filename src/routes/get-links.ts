@@ -1,9 +1,9 @@
 import z from "zod";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-import { prisma } from "../lib/prisma";
 import { FastifyTypedInstance } from "../types";
-import { ClientError, errorResponseSchema } from "../errors/client-error";
+import { errorResponseSchema } from "../errors/client-error";
+import { getLinksController } from "../controllers/get-links-controllers";
 
 const getLinksParamsSchema = z.object({
  tripId: z.string().uuid(),
@@ -17,6 +17,7 @@ const linkSchema = z.object({
 });
 
 const getLinksResponseSchema = z.object({ links: z.array(linkSchema) });
+export type GetLinksParamsSchema = z.infer<typeof getLinksParamsSchema>;
 
 export async function getLinks(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
@@ -32,27 +33,6 @@ export async function getLinks(app: FastifyTypedInstance) {
     },
    },
   },
-  async (request, reply) => {
-   try {
-    const { tripId } = request.params;
-
-    const trip = await prisma.trip.findUnique({
-     where: { id: tripId },
-     include: {
-      links: true,
-     },
-    });
-
-    if (!trip) {
-     throw new ClientError("Trip not found.");
-    }
-
-    return { links: trip.links };
-   } catch (error: unknown) {
-    if (error instanceof ClientError) {
-     reply.status(400).send({ error: error.message });
-    }
-   }
-  }
+  getLinksController
  );
 }
