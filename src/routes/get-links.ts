@@ -3,7 +3,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { FastifyTypedInstance } from "../types";
 import { errorResponseSchema } from "../errors/client-error";
-import { getLinksController } from "../controllers/get-links-controllers";
+import { getLinksController } from "../controllers/get-links-controller";
 
 const getLinksParamsSchema = z.object({
  tripId: z.string().uuid(),
