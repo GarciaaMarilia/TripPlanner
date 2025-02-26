@@ -4,6 +4,14 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { prisma } from "../lib/prisma";
 import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
+import { deleteActivityController } from "../controllers/delete-activity-controller";
+
+const deleteActivitySchema = z.object({
+ tripId: z.string().uuid(),
+ activityId: z.string().uuid(),
+});
+
+export type DeleteActivityParamsSchema = z.infer<typeof deleteActivitySchema>;
 
 export async function deleteActivity(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().delete(
@@ -12,31 +20,9 @@ export async function deleteActivity(app: FastifyTypedInstance) {
    schema: {
     description: "Delete an activity",
     tags: ["Activities"],
-    params: z.object({
-     tripId: z.string().uuid(),
-     activityId: z.string().uuid(),
-    }),
+    params: deleteActivitySchema,
    },
   },
-  async (request, reply) => {
-   const { tripId, activityId } = request.params;
-
-   try {
-    const activity = await prisma.activity.deleteMany({
-     where: {
-      id: activityId,
-      trip_id: tripId,
-     },
-    });
-
-    if (activity.count === 0) {
-     throw new ClientError("Activity not found.");
-    }
-    reply.status(200).send({ message: "Activity deleted successfully." });
-   } catch (error) {
-    console.error(error);
-    throw new ClientError("An unexpected error occurred.");
-   }
-  }
+  deleteActivityController
  );
 }
