@@ -1,19 +1,23 @@
 import z from "zod";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { prisma } from "../lib/prisma";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
-export async function deleteParticipant(app: FastifyInstance) {
+const deleteParticipantParamsSchema = z.object({
+ tripId: z.string().uuid(),
+ participantId: z.string().uuid(),
+});
+
+export async function deleteParticipant(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().delete(
   "/trips/:tripId/participants/:participantId",
   {
    schema: {
-    params: z.object({
-     tripId: z.string().uuid(),
-     participantId: z.string().uuid(),
-    }),
+    description: "Delete a participant for a trip",
+    tags: ["Participants"],
+    params: deleteParticipantParamsSchema,
    },
   },
   async (request, reply) => {

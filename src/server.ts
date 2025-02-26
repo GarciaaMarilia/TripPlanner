@@ -1,10 +1,14 @@
 import dotenv from "dotenv";
 import fastify from "fastify";
 import cors from "@fastify/cors";
+import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
 
 import {
+ jsonSchemaTransform,
  serializerCompiler,
  validatorCompiler,
+ ZodTypeProvider,
 } from "fastify-type-provider-zod";
 
 import { authRoutes } from "./routes/auth";
@@ -26,7 +30,7 @@ import { getParticipants } from "./routes/get-participants";
 import { deleteParticipant } from "./routes/delete-participant";
 import { confirmParticipants } from "./routes/confirm-participant";
 
-const app = fastify({ logger: true });
+const app = fastify().withTypeProvider<ZodTypeProvider>();
 
 // Carregar o arquivo `.env` correto com base no NODE_ENV
 const envFile =
@@ -37,10 +41,24 @@ const PORT = process.env.PORT || 3333;
 
 app.register(cors, {
  // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
- origin: process.env.WEB_BASE_URL, // Permite apenas o domínio do GitHub Pages
- methods: ["GET", "POST", "PUT", "DELETE"], // Especifique os métodos permitidos
+ origin: "*",
+ methods: ["GET", "POST", "PUT", "DELETE"],
  credentials: true,
  allowedHeaders: ["Content-Type", "Authorization"],
+});
+
+app.register(fastifySwagger, {
+ openapi: {
+  info: {
+   title: "Typed TripPlanner API",
+   version: "1.0.0",
+  },
+ },
+ transform: jsonSchemaTransform,
+});
+
+app.register(fastifySwaggerUi, {
+ routePrefix: "/docs",
 });
 
 app.setValidatorCompiler(validatorCompiler); // tratamento de dados com zod
@@ -48,12 +66,12 @@ app.setSerializerCompiler(serializerCompiler);
 
 app.setErrorHandler(errorHandler); // tratamento de erros
 
-app.get("/", async (request, reply) => {
+app.get("/", async () => {
  return { message: "Olá, bem-vindo ao servidor!" };
 });
 
-app.register(getLinks);
 app.register(getTrips);
+app.register(getLinks);
 app.register(createTrip);
 app.register(createLink);
 app.register(updateTrip);
@@ -70,6 +88,6 @@ app.register(getParticipants);
 app.register(deleteParticipant);
 app.register(confirmParticipants);
 
-app.listen(PORT, "0.0.0.0", () => {
+app.listen({ port: 3333 }).then(() => {
  console.log(`Server running on port ${PORT}`);
 });

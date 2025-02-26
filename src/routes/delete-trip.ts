@@ -1,33 +1,42 @@
 import z from "zod";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { prisma } from "../lib/prisma";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
-export async function deleteTrip(app: FastifyInstance) {
+const deleteTripSchema = z.object({
+ tripId: z.string().uuid(),
+});
+
+export async function deleteTrip(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().delete(
   "/trips/:tripId",
   {
    schema: {
-    params: z.object({
-     tripId: z.string().uuid(),
-    }),
+    description: "Delete a trip",
+    tags: ["Trips"],
+    params: deleteTripSchema,
+    response: {
+     200: z.string(),
+     404: z.string(),
+    },
    },
   },
   async (request, reply) => {
-   const { tripId } = request.params;
-
    try {
-    const trip = await prisma.trip.delete({
+    const { tripId } = request.params;
+
+    const trip = await prisma.trip.deleteMany({
      where: {
       id: tripId,
      },
     });
+
     if (!trip) {
      throw new ClientError("Trip not found.");
     }
-    reply.status(200).send({ message: "Trip deleted successfully." });
+    reply.status(200).send("Trip deleted successfully.");
    } catch (error) {
     console.error(error);
     throw new ClientError("An unexpected error occured.");

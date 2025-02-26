@@ -21,6 +21,8 @@ export async function createInvite(app: FastifyInstance) {
   "/trips/:tripId/invites",
   {
    schema: {
+    description: "Create an invite",
+    tags: ["Trips"],
     params: createInviteParamsSchema,
     body: createInviteBodySchema,
    },

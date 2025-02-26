@@ -1,14 +1,28 @@
 import z from "zod";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { dayjs } from "../lib/dayjs";
 import { prisma } from "../lib/prisma";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
 const getActivitiesSchema = z.object({
  tripId: z.string().uuid(),
 });
+
+const activitySchema = z.object({
+ id: z.string().uuid(),
+ trip_id: z.string().uuid(),
+ title: z.string().min(4),
+ occurs_at: z.coerce.date(),
+});
+
+const activitiesResponseSchema = z.array(
+ z.object({
+  data: z.coerce.date(),
+  activities: z.array(activitySchema),
+ })
+);
 
 interface ActivityProps {
  id: string;
@@ -17,12 +31,17 @@ interface ActivityProps {
  occurs_at: Date;
 }
 
-export async function getActivity(app: FastifyInstance) {
+export async function getActivity(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
   "/trips/:tripId/activities",
   {
    schema: {
+    description: "List all activities for a trip",
+    tags: ["Activities"],
     params: getActivitiesSchema,
+    response: {
+     200: activitiesResponseSchema,
+    },
    },
   },
   async (request) => {
@@ -56,15 +75,12 @@ export async function getActivity(app: FastifyInstance) {
     return {
      data: date.toDate(),
      activities: trip.activities.filter((activity: ActivityProps) => {
-      // add type para deploy heroku
       return dayjs(activity.occurs_at).isSame(date, "days");
      }),
     };
    });
 
-   return {
-    activities,
-   };
+   return activities;
   }
  );
 }

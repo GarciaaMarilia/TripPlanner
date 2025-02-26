@@ -1,9 +1,9 @@
 import z from "zod";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { dayjs } from "../lib/dayjs";
 import { prisma } from "../lib/prisma";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
 const updateTripParamsSchema = z.object({
@@ -16,13 +16,22 @@ const updateTripBodySchema = z.object({
  ends_at: z.coerce.date(),
 });
 
-export async function updateTrip(app: FastifyInstance) {
+const updateTripResponseSchema = z.object({
+ tripId: z.string(),
+});
+
+export async function updateTrip(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().put(
   "/trips/:tripId",
   {
    schema: {
+    description: "Update a trip",
+    tags: ["Trips"],
     params: updateTripParamsSchema,
     body: updateTripBodySchema,
+    response: {
+     200: updateTripResponseSchema,
+    },
    },
   },
   async (request) => {

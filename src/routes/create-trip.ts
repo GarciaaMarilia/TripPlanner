@@ -1,14 +1,14 @@
 import z from "zod";
 import nodemailer from "nodemailer";
-import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { dayjs } from "../lib/dayjs";
 import { prisma } from "../lib/prisma";
 import { getMailClient } from "../lib/mail";
+import { FastifyTypedInstance } from "../types";
 import { ClientError } from "../errors/client-error";
 
-const createTripSchema = z.object({
+export const createTripSchema = z.object({
  id_user: z.string(),
  destination: z.string().min(4),
  starts_at: z.coerce.date(),
@@ -18,11 +18,13 @@ const createTripSchema = z.object({
  emails_to_invite: z.array(z.string().email()),
 });
 
-export async function createTrip(app: FastifyInstance) {
+export async function createTrip(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().post(
   "/trips",
   {
    schema: {
+    description: "Create a trip",
+    tags: ["Trips"],
     body: createTripSchema,
    },
   },
@@ -76,7 +78,6 @@ export async function createTrip(app: FastifyInstance) {
     const trip = await prisma.trip.create({
      data: tripData,
     });
-    console.log("Trip Created:", trip);
 
     const formattedStartDate = dayjs(starts_at).format("LL");
     const formattedEndDate = ends_at && dayjs(ends_at).format("LL");
