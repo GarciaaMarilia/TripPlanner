@@ -1,10 +1,8 @@
 import z from "zod";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-import { dayjs } from "../lib/dayjs";
-import { prisma } from "../lib/prisma";
 import { FastifyTypedInstance } from "../types";
-import { ClientError } from "../errors/client-error";
+import { updateTripController } from "../controllers/update-trip-controller";
 
 const updateTripParamsSchema = z.object({
  tripId: z.string().uuid(),
@@ -20,6 +18,9 @@ const updateTripResponseSchema = z.object({
  tripId: z.string(),
 });
 
+export type UpdateTripParamsSchema = z.infer<typeof updateTripParamsSchema>;
+export type UpdateTripBodySchema = z.infer<typeof updateTripBodySchema>;
+
 export async function updateTrip(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().put(
   "/trips/:tripId",
@@ -34,42 +35,6 @@ export async function updateTrip(app: FastifyTypedInstance) {
     },
    },
   },
-  async (request) => {
-   const { tripId } = request.params;
-   const { destination, starts_at, ends_at } = request.body; // a requisiçao post envia esses dados para a api
-
-   const trip = await prisma.trip.findUnique({
-    where: {
-     id: tripId,
-    },
-   });
-
-   if (!trip) {
-    throw new ClientError("Trip not found.");
-   }
-
-   if (dayjs(starts_at).isBefore(new Date())) {
-    throw new ClientError("Invalid trip start date."); // validaçao das datas
-   }
-
-   if (dayjs(ends_at).isBefore(starts_at)) {
-    throw new ClientError("Invalid trip end date."); // validaçao das datas
-   }
-
-   await prisma.trip.update({
-    where: {
-     id: tripId,
-    },
-    data: {
-     destination,
-     starts_at,
-     ends_at,
-    },
-   });
-
-   return {
-    tripId: trip.id,
-   };
-  }
+  updateTripController
  );
 }

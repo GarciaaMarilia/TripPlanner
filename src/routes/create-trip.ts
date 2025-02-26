@@ -4,7 +4,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { FastifyTypedInstance } from "../types";
 import { createTripController } from "../controllers/create-trip-controller";
 
-const createTripSchema = z.object({
+export const createTripSchema = z.object({
  id_user: z.string(),
  destination: z.string().min(4),
  starts_at: z.coerce.date(),
