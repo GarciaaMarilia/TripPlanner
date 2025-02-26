@@ -1,16 +1,26 @@
 import z from "zod";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-import { prisma } from "../lib/prisma";
 import { FastifyTypedInstance } from "../types";
-import { createTripSchema } from "./create-trip";
-import { ClientError } from "../errors/client-error";
+import { getTripsController } from "../controllers/get-trips-controllers";
 
 const getTripsSchema = z.object({
  userId: z.string(),
 });
 
-const tripsResponseSchema = z.array(createTripSchema);
+const tripsResponseSchema = z.array(
+ z.object({
+  id: z.string(),
+  id_user: z.string(),
+  destination: z.string(),
+  starts_at: z.date(),
+  ends_at: z.date().nullable(),
+  is_confirmed: z.boolean(),
+  created_at: z.date(),
+ })
+);
+
+export type GetTripsSchema = z.infer<typeof getTripsSchema>;
 
 export async function getTrips(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().get(
@@ -20,27 +30,13 @@ export async function getTrips(app: FastifyTypedInstance) {
     description: "List all trips for user",
     tags: ["Trips"],
     params: getTripsSchema,
-    // response: {
-    //  200: tripsResponseSchema,
-    //  404: z.string(),
-    // },
+    response: {
+     200: tripsResponseSchema,
+     400: z.object({ error: z.string() }),
+     404: z.object({ error: z.string() }),
+    },
    },
   },
-  async (request, reply) => {
-   const { userId } = request.params;
-
-   const trips = await prisma.trip.findMany({
-    where: {
-     id_user: userId,
-    },
-   });
-   if (!trips || trips.length === 0) {
-    reply.status(404);
-    throw new ClientError("Trips not found.");
-   }
-
-   reply.status(200);
-   return trips;
-  }
+  getTripsController
  );
 }
