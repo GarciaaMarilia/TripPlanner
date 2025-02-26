@@ -11,7 +11,7 @@ import {
  ZodTypeProvider,
 } from "fastify-type-provider-zod";
 
-import { authRoutes } from "./routes/auth";
+import { login } from "./routes/login";
 import { getTrips } from "./routes/get-trips";
 import { getLinks } from "./routes/get-links";
 import { errorHandler } from "./error-handler";
@@ -22,6 +22,7 @@ import { deleteLink } from "./routes/delete-link";
 import { deleteTrip } from "./routes/delete-trip";
 import { confirmTrip } from "./routes/confirm-trip";
 import { getActivity } from "./routes/get-activities";
+import { registerUser } from "./routes/register-user";
 import { createActivity } from "./routes/create-activity";
 import { getParticipant } from "./routes/get-participant";
 import { deleteActivity } from "./routes/delete-activity";
@@ -70,16 +71,17 @@ app.get("/", async () => {
  return { message: "Olá, bem-vindo ao servidor!" };
 });
 
+app.register(login);
 app.register(getTrips);
 app.register(getLinks);
 app.register(createTrip);
 app.register(createLink);
 app.register(updateTrip);
-app.register(authRoutes);
 app.register(deleteLink);
 app.register(deleteTrip);
 app.register(confirmTrip);
 app.register(getActivity);
+app.register(registerUser);
 app.register(createActivity);
 app.register(getTripDetails);
 app.register(getParticipant);
