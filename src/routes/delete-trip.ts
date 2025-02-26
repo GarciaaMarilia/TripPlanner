@@ -24,14 +24,15 @@ export async function deleteTrip(app: FastifyTypedInstance) {
    },
   },
   async (request, reply) => {
-   const { tripId } = request.params;
-
    try {
-    const trip = await prisma.trip.delete({
+    const { tripId } = request.params;
+
+    const trip = await prisma.trip.deleteMany({
      where: {
       id: tripId,
      },
     });
+
     if (!trip) {
      throw new ClientError("Trip not found.");
     }

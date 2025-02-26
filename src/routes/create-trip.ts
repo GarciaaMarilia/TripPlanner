@@ -78,7 +78,6 @@ export async function createTrip(app: FastifyTypedInstance) {
     const trip = await prisma.trip.create({
      data: tripData,
     });
-    console.log("Trip Created:", trip);
 
     const formattedStartDate = dayjs(starts_at).format("LL");
     const formattedEndDate = ends_at && dayjs(ends_at).format("LL");
