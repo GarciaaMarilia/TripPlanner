@@ -12,6 +12,11 @@ const userSchema = z.object({
  name: z.string(),
 });
 
+const userResponseSchema = z.object({
+ id: z.string().uuid(),
+ name: z.string(),
+});
+
 const registerBodySchema = z.object({
  email: z.string(),
  password: z.string(),
@@ -30,11 +35,12 @@ const loginResponseSchema = z.object({
    /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/,
    "Invalid JWT token format"
   ),
- user: userSchema,
+ user: userResponseSchema,
 });
 
 export type RegisterBodySchema = z.infer<typeof registerBodySchema>;
 export type LoginBodySchema = z.infer<typeof loginBodySchema>;
+export type UserSchema = z.infer<typeof userSchema>;
 
 export async function login(app: FastifyTypedInstance) {
  app.withTypeProvider<ZodTypeProvider>().post(

@@ -31,14 +31,17 @@ import { getParticipants } from "./routes/get-participants";
 import { deleteParticipant } from "./routes/delete-participant";
 import { confirmParticipants } from "./routes/confirm-participant";
 
+import authPlugin from "./plugins/authPlugin";
+
 const app = fastify().withTypeProvider<ZodTypeProvider>();
 
 // Carregar o arquivo `.env` correto com base no NODE_ENV
-const envFile =
+export const envFile =
  process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
 dotenv.config({ path: envFile });
 
 const PORT = process.env.PORT || 3333;
+const JWT_SECRET = process.env.JWT_SECRET || "default";
 
 app.register(cors, {
  // garantir a segurança e dizer qual frontend pode acessar o backend. Por enquanto, estamos em produçao, entao, vamos setar como true e todo frontend podera acessar, porém, em produçao, mudaermos isso
@@ -48,7 +51,10 @@ app.register(cors, {
  allowedHeaders: ["Content-Type", "Authorization"],
 });
 
+app.register(authPlugin);
+
 app.register(fastifySwagger, {
+ // configuraçao do swagger (documentacao de rotas)
  openapi: {
   info: {
    title: "Typed TripPlanner API",
@@ -60,6 +66,18 @@ app.register(fastifySwagger, {
 
 app.register(fastifySwaggerUi, {
  routePrefix: "/docs",
+});
+
+app.addHook("preHandler", async (request, reply) => {
+ if (!request.url.startsWith("/login")) {
+  // Esse plugin é usado em todas as rotas, exceto na de login.
+  try {
+   await app.authenticate(request, reply);
+  } catch (err) {
+   console.error(err);
+   reply.code(401).send({ error: "Unauthorized" });
+  }
+ }
 });
 
 app.setValidatorCompiler(validatorCompiler); // tratamento de dados com zod

@@ -14,6 +14,14 @@ export const createTripSchema = z.object({
  emails_to_invite: z.array(z.string().email()),
 });
 
+export const headersSchema = z.object({
+ authorization: z
+  .string()
+  .regex(/^Bearer\s[a-zA-Z0-9\-_]+\.[a-zA-Z0-9\-_]+\.[a-zA-Z0-9\-_]+$/, {
+   message: "Invalid Bearer token format",
+  }),
+});
+
 export type CreateTripSchema = z.infer<typeof createTripSchema>;
 
 export async function createTrip(app: FastifyTypedInstance) {
@@ -24,6 +32,7 @@ export async function createTrip(app: FastifyTypedInstance) {
     description: "Create a trip",
     tags: ["Trips"],
     body: createTripSchema,
+    headers: headersSchema,
    },
   },
   createTripController

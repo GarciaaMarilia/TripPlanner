@@ -1,11 +1,17 @@
+import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { FastifyReply, FastifyRequest } from "fastify";
 
 import { prisma } from "../lib/prisma";
 import { LoginBodySchema } from "../routes/register-user";
 import { ClientError } from "../errors/client-error";
 
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const envFile =
+ process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+dotenv.config({ path: envFile });
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function loginController(
  request: FastifyRequest<{ Body: LoginBodySchema }>,
@@ -17,6 +23,10 @@ export async function loginController(
    where: { email },
   });
 
+  if (!JWT_SECRET) {
+   throw new ClientError("JWT_SECRET is not defined in environment variables");
+  }
+
   if (!user) {
    throw new ClientError("User not found");
   }
@@ -27,13 +37,13 @@ export async function loginController(
    throw new ClientError("Invalid password");
   }
 
-  const token = jwt.sign({ userId: user.id }, "your_jwt-secret", {
+  const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
    expiresIn: "1h",
   });
 
-  const { password: _, ...userWithoutPassword } = user;
+  const { password: _, email: __, ...userWithoutPasswordAndEmail } = user;
 
-  return reply.status(200).send({ token, user: userWithoutPassword });
+  return reply.status(200).send({ token, user: userWithoutPasswordAndEmail });
  } catch (error: unknown) {
   if (error instanceof ClientError) {
    reply.status(401).send({ error: error.message });

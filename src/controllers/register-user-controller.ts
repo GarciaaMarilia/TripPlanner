@@ -1,9 +1,9 @@
+import bcrypt from "bcrypt";
 import { FastifyReply, FastifyRequest } from "fastify";
 
 import { ClientError } from "../errors/client-error";
 import { RegisterBodySchema } from "../routes/register-user";
 
-const bcrypt = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
